@@ -55,3 +55,45 @@ jobs:
         git add ./kustomization.yml
         git commit -m "[BOT] Changing image to $REGISTRY/$BACKEND_REPOSITORY:$IMAGE_TAG"
         git push
+
+  frontend:
+    name: Deploy frontend
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v6.0.0
+      with:
+        aws-region: us-east-1
+        role-to-assume: arn:aws:iam::654654554686:role/workshop-march-github-role
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build, tag, and push docker image to Amazon ECR
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        docker build -f ./dvn-workshop-apps/frontend/youtube-live-app/Dockerfile \
+            -t $REGISTRY/$FRONTEND_REPOSITORY:$IMAGE_TAG \
+            ./dvn-workshop-apps/frontend/youtube-live-app
+        docker push $REGISTRY/$FRONTEND_REPOSITORY:$IMAGE_TAG
+
+    - uses: actions/checkout@v6
+      with:
+        repository: 'kenerry-serain/dvn-workshop-mar-dia-2-gitops'
+        token: ${{ secrets.PAT }}
+
+    - name: Kustomize Edit
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        kustomize edit set image $REGISTRY/$FRONTEND_REPOSITORY=$REGISTRY/$FRONTEND_REPOSITORY:$IMAGE_TAG
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add ./kustomization.yml
+        git commit -m "[BOT] Changing image to $REGISTRY/$FRONTEND_REPOSITORY:$IMAGE_TAG"
+        git push
