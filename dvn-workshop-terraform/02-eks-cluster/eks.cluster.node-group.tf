@@ -16,5 +16,6 @@ resource "aws_eks_node_group" "this" {
     aws_iam_role_policy_attachment.eks_cluster_ng_AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.eks_cluster_ng_AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.eks_cluster_ng_AmazonEC2ContainerRegistryReadOnly,
+    aws_iam_role_policy_attachment.eks_cluster_ng_AmazonSSMManagedInstanceCore
   ]
 }

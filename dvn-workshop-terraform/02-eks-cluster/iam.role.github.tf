@@ -22,7 +22,7 @@ resource "aws_iam_role" "github" {
 }
 
 resource "aws_iam_policy" "github" {
-  name        = "workshop-march-github-policy"
+  name = "workshop-march-github-policy"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -35,16 +35,16 @@ resource "aws_iam_policy" "github" {
         Effect   = "Allow"
         Resource = "*"
       },
-       {
+      {
         Sid = "AllowPushPull"
         Action = [
-            "ecr:BatchGetImage",
-            "ecr:BatchCheckLayerAvailability",
-            "ecr:CompleteLayerUpload",
-            "ecr:GetDownloadUrlForLayer",
-            "ecr:InitiateLayerUpload",
-            "ecr:PutImage",
-            "ecr:UploadLayerPart"
+          "ecr:BatchGetImage",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:CompleteLayerUpload",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:InitiateLayerUpload",
+          "ecr:PutImage",
+          "ecr:UploadLayerPart"
         ]
         Effect   = "Allow"
         Resource = aws_ecr_repository.this[*].arn
